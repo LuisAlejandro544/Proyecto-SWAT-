@@ -19,7 +19,8 @@ Documento de referencia técnica rápida para que cualquier modelo o desarrollad
 - **Exportación Android (`export_presets.cfg`)**:
   - `gradle_build/use_gradle_build=false` (usa plantilla precompilada `android_debug.apk` de Godot + `apksigner`, compilación rápida en CI).
   - `gradle_build/export_format=0` (`.apk`).
-  - `gradle_build/min_sdk="24"` (Android 7.0) / `gradle_build/target_sdk="34"` (Android 14).
+  - `gradle_build/min_sdk=""` y `gradle_build/target_sdk=""` (hereda los niveles SDK de la plantilla precompilada de Godot al tener `use_gradle_build=false`).
+  - `textures/vram_compression/import_etc2_astc=true` en `project.godot` (compresión de texturas requerida para Android).
   - Arquitecturas habilitadas: **`armeabi-v7a=true`** (32 bits) y **`arm64-v8a=true`** (64 bits).
   - Permisos: `permissions/internet=false`, `permissions/vibrate=true`.
 

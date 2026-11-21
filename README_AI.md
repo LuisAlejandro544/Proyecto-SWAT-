@@ -57,6 +57,9 @@ python3 -m py_compile blender-scripts/*.py blender-scripts/lib/*.py blender-scri
   - Godot `4.7.2-stable` lee `~/.config/godot/editor_settings-4.7.tres` para localizar `export/android/android_sdk_path`, `java_sdk_path` y `debug_keystore` antes de invocar `--export-debug "Android"`.
 - **Regla de Keystore Debug en `export_presets.cfg`**:
   - Godot exige regla **todo o nada** para `keystore/debug`, `keystore/debug_user` y `keystore/debug_password`. Los tres deben quedar vacíos (`""`) en `export_presets.cfg` para delegar la firma al `debug.keystore` configurado en `editor_settings-4.7.tres` durante el CI.
+- **Preset sin Gradle (`use_gradle_build=false`) y texturas Android**:
+  - Con `gradle_build/use_gradle_build=false`, `gradle_build/min_sdk` y `gradle_build/target_sdk` deben permanecer vacíos (`""`) porque Godot usa los valores precompilados de `android_debug.apk`.
+  - `project.godot` debe incluir `textures/vram_compression/import_etc2_astc=true` bajo `[rendering]` para habilitar la exportación Android.
 
 ---
 
