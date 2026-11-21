@@ -58,6 +58,64 @@ def get_or_create_material(
     return mat
 
 
+def get_or_create_textured_material(
+    name: str,
+    image_name: str,
+    pixels_rgba: list[float],
+    width: int,
+    height: int,
+    metallic: float = 0.0,
+    roughness: float = 0.5,
+):
+    """Crea un material Principled BSDF con textura RGBA generada en memoria y empaquetada."""
+    if name in bpy.data.materials:
+        return bpy.data.materials[name]
+
+    img = bpy.data.images.get(image_name)
+    if img is None:
+        img = bpy.data.images.new(image_name, width=width, height=height, alpha=True)
+    img.pixels.foreach_set(pixels_rgba)
+    img.pack()
+
+    mat = bpy.data.materials.new(name=name)
+    mat.use_nodes = True
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+    bsdf = nodes.get("Principled BSDF")
+    if bsdf:
+        bsdf.inputs["Metallic"].default_value = metallic
+        bsdf.inputs["Roughness"].default_value = roughness
+        tex_node = nodes.new(type="ShaderNodeTexImage")
+        tex_node.image = img
+        links.new(tex_node.outputs["Color"], bsdf.inputs["Base Color"])
+    return mat
+
+
+def apply_box_uv_projection(obj, uv_scale: float = 0.5):
+    """Genera coordenadas UV cúbicas limpias directamente vía bmesh (compatible con --background)."""
+    if obj is None or obj.type != 'MESH':
+        return
+    mesh = obj.data
+    bm = bmesh.new()
+    bm.from_mesh(mesh)
+    uv_layer = bm.loops.layers.uv.verify()
+    world_mat = obj.matrix_world
+    for face in bm.faces:
+        n = (world_mat.to_3x3() @ face.normal).normalized()
+        ax, ay, az = abs(n.x), abs(n.y), abs(n.z)
+        for loop in face.loops:
+            co = world_mat @ loop.vert.co
+            if az >= ax and az >= ay:
+                u, v = co.x * uv_scale, co.y * uv_scale
+            elif ax >= ay and ax >= az:
+                u, v = co.y * uv_scale, co.z * uv_scale
+            else:
+                u, v = co.x * uv_scale, co.z * uv_scale
+            loop[uv_layer].uv = (u, v)
+    bm.to_mesh(mesh)
+    bm.free()
+
+
 def apply_material(obj, material):
     """Asigna un material a un objeto de malla."""
     if obj.type != 'MESH':
@@ -254,6 +312,7 @@ def export_hierarchy_glb(root_obj, output_path: str):
         export_apply=True,
         export_yup=True,
         export_materials='EXPORT',
+        export_image_format='AUTO',
         export_normals=True,
     )
     print(f"[GLB Exported] {output_path}")

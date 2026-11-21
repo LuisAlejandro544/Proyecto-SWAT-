@@ -17,6 +17,8 @@ radius = 0.34
 height = 1.78
 
 [node name="PlayerSWAT" type="CharacterBody3D"]
+collision_layer = 1
+collision_mask = 5
 script = ExtResource("1_player_script")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
@@ -39,10 +41,12 @@ near = 0.03
 
 [node name="AimRay" type="RayCast3D" parent="HeadPivot/Camera3D"]
 target_position = Vector3(0, 0, -65)
+collision_mask = 3
 collide_with_areas = true
 collide_with_bodies = true
 
 [node name="InteractRay" type="RayCast3D" parent="HeadPivot/Camera3D"]
-target_position = Vector3(0, 0, -2.9)
+target_position = Vector3(0, 0, -3.1)
+collision_mask = 1
 collide_with_areas = false
 collide_with_bodies = true

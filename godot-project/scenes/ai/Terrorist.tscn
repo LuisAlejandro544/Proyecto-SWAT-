@@ -32,6 +32,8 @@ height = 1.28
 radius = 0.28
 
 [node name="Terrorist" type="CharacterBody3D"]
+collision_layer = 4
+collision_mask = 5
 script = ExtResource("1_ai_script")
 shell_casing_scene = ExtResource("4_shell_scene")
 
@@ -45,7 +47,8 @@ target_desired_distance = 0.85
 
 [node name="LineOfSightRay" type="RayCast3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.48, 0)
-target_position = Vector3(0, 0, -25)
+target_position = Vector3(0, 0, -28)
+collision_mask = 1
 
 [node name="VisualRoot" type="Node3D" parent="."]
 
@@ -69,6 +72,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.10)
 mesh = SubResource("BoxMesh_ak_flash_b")
 
 [node name="BodyHitbox" type="Area3D" parent="."]
+collision_layer = 2
+collision_mask = 0
 monitoring = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="BodyHitbox"]
@@ -76,6 +81,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.72, 0)
 shape = SubResource("CapsuleShape3D_body_hit")
 
 [node name="HeadHitbox" type="Area3D" parent="."]
+collision_layer = 2
+collision_mask = 0
 monitoring = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="HeadHitbox"]

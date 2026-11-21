@@ -27,6 +27,7 @@ from build_hotel_props import (
     build_hotel_plant,
     build_terrorist_pill,
 )
+from build_hotel_building import build_hotel_building
 
 
 def setup_studio_lighting_and_camera(target_pos: Vector, cam_pos: Vector, lens_mm: float = 48.0):
@@ -156,6 +157,44 @@ def render_all_previews():
         cam_pos=(1.95, 2.05, 1.18),
         lens_mm=42.0,
     )
+
+    build_hotel_building()
+    scene = bpy.context.scene
+    scene.render.engine = 'CYCLES'
+    scene.cycles.device = 'CPU'
+    scene.cycles.samples = 24
+    scene.cycles.use_denoising = True
+    scene.render.resolution_x = 1280
+    scene.render.resolution_y = 720
+    scene.render.image_settings.file_format = 'PNG'
+
+    def add_point_light(name, loc, energy, color=(1.0, 0.90, 0.72), radius=0.6):
+        ldata = bpy.data.lights.new(name=name, type='POINT')
+        ldata.energy = energy
+        ldata.shadow_soft_size = radius
+        ldata.color = color
+        lobj = bpy.data.objects.new(name=name, object_data=ldata)
+        lobj.location = Vector(loc)
+        bpy.context.collection.objects.link(lobj)
+
+    add_point_light("LobbyChandelier", (0.0, -8.4, 6.4), 6500.0, (1.0, 0.88, 0.66), 0.9)
+    add_point_light("ReceptionFill", (12.5, -8.8, 3.5), 2500.0, (1.0, 0.92, 0.78), 0.7)
+    add_point_light("LoungeFill", (-12.5, -8.6, 3.5), 2500.0, (1.0, 0.88, 0.70), 0.7)
+    add_point_light("MezzFill", (0.0, 1.5, 7.6), 3500.0, (1.0, 0.92, 0.80), 0.8)
+
+    cam_data = bpy.data.cameras.new("HotelInteriorCam")
+    cam_data.lens = 24.0
+    cam_data.clip_start = 0.05
+    cam_data.clip_end = 100.0
+    cam_obj = bpy.data.objects.new("HotelInteriorCam", cam_data)
+    cam_obj.location = Vector((0.0, -14.6, 2.3))
+    cam_obj.rotation_euler = (Vector((0.0, -1.5, 3.8)) - cam_obj.location).to_track_quat('-Z', 'Y').to_euler()
+    bpy.context.collection.objects.link(cam_obj)
+    scene.camera = cam_obj
+    out_hotel_png = os.path.join(previews_dir, "hotel_building_preview.png")
+    scene.render.filepath = out_hotel_png
+    bpy.ops.render.render(write_still=True)
+    print(f"[PNG Preview] {out_hotel_png}")
 
 
 if __name__ == "__main__":

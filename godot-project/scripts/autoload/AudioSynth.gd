@@ -63,8 +63,10 @@ func play_hitmarker(is_headshot: bool = false) -> void:
 	_play_2d(_wav_hitmarker, 1.35 if is_headshot else 1.0, -4.0)
 
 
+const MAX_CONCURRENT_VOICES := 14
+
 func _play_2d(stream: AudioStreamWAV, pitch: float, volume_db: float) -> void:
-	if stream == null:
+	if stream == null or get_child_count() >= MAX_CONCURRENT_VOICES:
 		return
 	var p := AudioStreamPlayer.new()
 	p.stream = stream
@@ -76,7 +78,7 @@ func _play_2d(stream: AudioStreamWAV, pitch: float, volume_db: float) -> void:
 
 
 func _play_3d(stream: AudioStreamWAV, pos: Vector3, pitch: float, volume_db: float, max_dist: float) -> void:
-	if stream == null or not is_inside_tree():
+	if stream == null or not is_inside_tree() or get_child_count() >= MAX_CONCURRENT_VOICES:
 		return
 	var p := AudioStreamPlayer3D.new()
 	p.stream = stream

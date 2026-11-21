@@ -18,18 +18,20 @@ Descripción exacta del árbol de carpetas y la responsabilidad de cada archivo 
 │   │   ├── build_ak47.py              # Rifle AK-47 para IA con piezas animables equivalentes (AK47_Bolt, AK47_Magazine, MuzzlePoint, EjectionPort)
 │   │   ├── build_shell_casing.py      # Casquillo/vaina metálica para expulsión física
 │   │   ├── build_hotel_door.py        # Puerta animable con marco fijo (DoorFrame) y pivote de bisagra (DoorPivot/DoorLeaf)
-│   │   └── build_hotel_props.py       # Mobiliario de hotel (cama, escritorio, sofá, pilar, planta) y píldora terrorista
-│   └── previews/                      # Renders PNG de verificación visual (generados en CI, ignorados en git)
+│   │   ├── build_hotel_props.py       # Mobiliario suelto de hotel (cama, escritorio, sofá, pilar, planta) y píldora terrorista
+│   │   └── build_hotel_building.py    # Edificio completo del Gran Hotel (36x32m, 2 pisos) con texturas PBR empaquetadas y colisionadores -col
+│   └── previews/                      # Renders PNG de verificación visual (generados en CI y local, ignorados en git)
 │
 ├── godot-project/                     # Proyecto principal del juego móvil en Godot 4.7.2-stable
-│   ├── project.godot                  # Configuración global del motor, autoloads, pantalla horizontal móvil y GL Compatibility
-│   ├── export_presets.cfg             # Preset "Android" APK (armeabi-v7a + arm64-v8a, min_sdk=24, target_sdk=34, sideload-ready)
+│   ├── project.godot                  # Configuración global del motor, autoloads, pantalla horizontal móvil y Vulkan 1.1 + fallback OpenGL ES 3.0
+│   ├── export_presets.cfg             # Presets Android APK: universal + separados arm64-v8a (64-bit) y armeabi-v7a (32-bit), sideload-ready
 │   ├── icon.svg                       # Icono vectorial del proyecto
 │   ├── assets/models/                 # Modelos .glb exportados desde Blender e importados por Godot (.import)
 │   │   ├── m4.glb
 │   │   ├── ak47.glb
 │   │   ├── shell_casing.glb
 │   │   ├── hotel_door.glb
+│   │   ├── hotel_building.glb         # Edificio completo del Gran Hotel Corona con colisiones -col y texturas empaquetadas
 │   │   ├── hotel_bed.glb
 │   │   ├── hotel_desk.glb
 │   │   ├── hotel_sofa.glb
@@ -67,13 +69,13 @@ Descripción exacta del árbol de carpetas y la responsabilidad de cada archivo 
 │       │   ├── MainMenu.gd            # Navegación desde el menú principal hacia misión y pantallas secundarias
 │       │   ├── SettingsScreen.gd      # Controladores de sliders/switches conectados a GameSettings
 │       │   ├── ControlsGuideScreen.gd # Retorno desde guía de controles al menú principal
-│       │   ├── MobileHUD.gd           # Coordinación multi-touch del HUD táctil, botón de disparo con aim simultáneo y feedback
-│       │   └── VirtualJoystick.gd     # Joystick virtual izquierdo con seguimiento independiente por touch index
+│       │   ├── MobileHUD.gd           # Coordinación multi-touch del HUD en arco circular, aim al disparar y daño direccional
+│       │   └── VirtualJoystick.gd     # Joystick virtual izquierdo centrado con seguimiento independiente por touch index
 │       ├── weapons/
 │       │   ├── PlayerWeaponM4.gd      # Lógica y las 5 animaciones solicitadas del M4 sobre los nodos de m4.glb
 │       │   └── ShellCasing.gd         # Física de rebote, audio al primer impacto y autodestrucción temporal
 │       └── world/
-│           ├── HotelArchitecture.gd   # Construcción procedural de los 2 pisos del hotel, escaleras, aberturas y NavigationMesh
+│           ├── HotelArchitecture.gd   # Horneado diferido del NavigationMesh sobre los colisionadores -col de hotel_building.glb
 │           ├── HotelDoor.gd           # Animación suave de apertura/cierre alrededor de DoorPivot y alerta sonora a IA
 │           └── HotelMissionManager.gd # Conteo de terroristas, pausa y pantallas de Victoria/Derrota
 │

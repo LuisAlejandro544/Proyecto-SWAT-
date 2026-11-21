@@ -6,7 +6,8 @@ on:
 env:
   GODOT_TAG: "4.7.2-stable"
   GODOT_TEMPLATE_DIR: "4.7.2.stable"
-  APK_OUTPUT: "build/android/swat_asalto_al_hotel_debug.apk"
+  APK_ARM64: "build/android/swat_asalto_al_hotel_arm64-v8a_debug.apk"
+  APK_ARMV7: "build/android/swat_asalto_al_hotel_armeabi-v7a_debug.apk"
 
 jobs:
   build-android-debug:
@@ -119,13 +120,14 @@ jobs:
           open(path, "w", encoding="utf-8").write(content)
           PY
 
-      - name: Compilar APK Debug con Godot 4.7.2-stable
+      - name: Compilar APKs Debug separados (64 bits y 32 bits) con Godot 4.7.2-stable
         run: |
-          mkdir -p "$(dirname "${{ env.APK_OUTPUT }}")"
-          ~/.local/bin/godot --headless --verbose --path godot-project --export-debug "Android" "../${{ env.APK_OUTPUT }}"
-          ls -lh "${{ env.APK_OUTPUT }}"
+          mkdir -p build/android
+          ~/.local/bin/godot --headless --verbose --path godot-project --export-debug "Android arm64-v8a" "../${{ env.APK_ARM64 }}"
+          ~/.local/bin/godot --headless --verbose --path godot-project --export-debug "Android armeabi-v7a" "../${{ env.APK_ARMV7 }}"
+          ls -lh "${{ env.APK_ARM64 }}" "${{ env.APK_ARMV7 }}"
 
-      - name: Verificar firma del APK Debug
+      - name: Verificar firma de ambos APKs Debug
         run: |
           SDK_DIR="${ANDROID_SDK_DIR:-${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}}"
           APKSIGNER="$(find "$SDK_DIR/build-tools" -name apksigner | sort -V | tail -n 1)"
@@ -133,11 +135,19 @@ jobs:
             echo "Error: No se encontró apksigner en $SDK_DIR/build-tools" >&2
             exit 1
           fi
-          "$APKSIGNER" verify --verbose "${{ env.APK_OUTPUT }}"
+          "$APKSIGNER" verify --verbose "${{ env.APK_ARM64 }}"
+          "$APKSIGNER" verify --verbose "${{ env.APK_ARMV7 }}"
 
-      - name: Subir APK Debug como artefacto descargable
+      - name: Subir APK Debug 64 bits (arm64-v8a)
         uses: actions/upload-artifact@v7
         with:
-          name: swat-asalto-al-hotel-debug-apk
-          path: ${{ env.APK_OUTPUT }}
+          name: swat-asalto-al-hotel-arm64-v8a-debug-apk
+          path: ${{ env.APK_ARM64 }}
+          retention-days: 30
+
+      - name: Subir APK Debug 32 bits (armeabi-v7a)
+        uses: actions/upload-artifact@v7
+        with:
+          name: swat-asalto-al-hotel-armeabi-v7a-debug-apk
+          path: ${{ env.APK_ARMV7 }}
           retention-days: 30

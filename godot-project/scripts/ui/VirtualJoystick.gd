@@ -29,6 +29,7 @@ func _apply_scale_from_settings() -> void:
 
 
 func _recalc_center() -> void:
+	pivot_offset = size * 0.5
 	if base_ring:
 		_center_pos = base_ring.position + base_ring.size * 0.5
 		_reset_knob()

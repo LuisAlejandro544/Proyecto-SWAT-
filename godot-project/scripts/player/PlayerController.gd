@@ -7,6 +7,9 @@ extends CharacterBody3D
 
 signal health_changed(hp: float, max_hp: float)
 signal door_prompt_changed(visible: bool, text: String)
+signal ads_changed(enabled: bool)
+signal crouch_changed(enabled: bool)
+signal damage_taken_from(attacker_pos: Vector3)
 signal player_died
 
 @export_group("Movimiento")
@@ -76,19 +79,19 @@ func set_fire_pressed(pressed: bool) -> void:
 
 
 func toggle_ads() -> void:
-	_wants_ads = not _wants_ads
-	if weapon_m4 and weapon_m4.has_method("set_ads"):
-		weapon_m4.set_ads(_wants_ads)
+	set_ads(not _wants_ads)
 
 
 func set_ads(enabled: bool) -> void:
 	_wants_ads = enabled
 	if weapon_m4 and weapon_m4.has_method("set_ads"):
 		weapon_m4.set_ads(_wants_ads)
+	ads_changed.emit(_wants_ads)
 
 
 func toggle_crouch() -> void:
 	is_crouching = not is_crouching
+	crouch_changed.emit(is_crouching)
 
 
 func trigger_jump() -> void:
@@ -120,11 +123,13 @@ func apply_camera_recoil(pitch_kick: float, yaw_kick: float) -> void:
 	_recoil_yaw += yaw_kick
 
 
-func apply_damage(amount: float) -> void:
+func apply_damage(amount: float, attacker_pos: Vector3 = Vector3.ZERO) -> void:
 	if is_dead:
 		return
 	health = maxf(0.0, health - amount)
 	health_changed.emit(health, max_health)
+	if attacker_pos != Vector3.ZERO:
+		damage_taken_from.emit(attacker_pos)
 	if health <= 0.0:
 		is_dead = true
 		_wants_fire = false

@@ -27,9 +27,11 @@ Directrices obligatorias que todo agente o colaborador automatizado debe cumplir
 ---
 
 ## 3. Reglas Específicas de Godot y Blender
-- **Preservar contratos de nodos GLB**: Antes de editar `build_m4.py`, `build_ak47.py` o `build_hotel_door.py`, verifica en `AI_CONTEXT.md` los nombres de pivotes y puntos (`M4_Bolt`, `M4_Magazine`, `M4_ChargingHandle`, `MuzzlePoint`, `EjectionPort`, `DoorPivot`, `AK47_Bolt`, `AK47_Magazine`).
+- **Generación local de modelos `.glb` con Blender**: Los agentes de IA **sí pueden y deben** descargar Blender `4.5.16 LTS` en `tools/blender/` (ignorado en `.gitignore`, sin subir binarios al repo) y ejecutar `./tools/blender/blender --background --python blender-scripts/generate_all.py` cuando creen o modifiquen scripts en `blender-scripts/`. De este modo, los `.glb` y sus `.glb.import` quedan listos y guardados en `godot-project/assets/models/` dentro del repositorio, sin depender de geometría procedural en GDScript ni obligar al usuario a esperar una ejecución manual previa en CI.
+- **Sin arquitectura procedural en Godot**: Toda la arquitectura y mobiliario fijo del Gran Hotel vive en Blender (`blender-scripts/models/build_hotel_building.py` -> `hotel_building.glb` con sufijos `-col` para colisiones automáticas), manteniendo `HotelArchitecture.gd` únicamente para hornear el `NavigationRegion3D`.
+- **Preservar contratos de nodos GLB**: Antes de editar `build_m4.py`, `build_ak47.py`, `build_hotel_door.py` o `build_hotel_building.py`, verifica en `AI_CONTEXT.md` los nombres de pivotes y puntos (`M4_Bolt`, `M4_Magazine`, `M4_ChargingHandle`, `MuzzlePoint`, `EjectionPort`, `DoorPivot`, `AK47_Bolt`, `AK47_Magazine`).
 - **Las 5 animaciones del M4 son obligatorias**: Toda actualización al arma del jugador debe preservar: (1) idle/balanceo/ADS, (2) disparo/retroceso+cerrojo, (3) fogonazo 3D+luz, (4) recarga completa y (5) expulsión física de casquillos.
-- **Rendimiento móvil**: No sobrecargues el hilo/frame principal con instancias infinitas (usa tiempos de vida finitos en casquillos/partículas y materiales compatibles con `gl_compatibility`).
+- **Rendimiento móvil**: No sobrecargues el hilo/frame principal con instancias infinitas (usa tiempos de vida finitos en casquillos/partículas, límite de voces de audio y materiales compatibles tanto con `mobile` Vulkan 1.1 como con `gl_compatibility` OpenGL ES 3.0).
 - **Workflows manuales**: En `.github/workflows/`, conserva `on: workflow_dispatch:` sin triggers automáticos de `push` o `pull_request` salvo orden contraria del usuario.
 - **Android SDK en CI**: No uses el paquete eliminado `tools` con `sdkmanager`; usa `android-actions/setup-android@v4` con paquetes explícitos (`platform-tools platforms;android-34 build-tools;34.0.0`).
 
@@ -38,5 +40,5 @@ Directrices obligatorias que todo agente o colaborador automatizado debe cumplir
 ## 4. Checklist Antes de Finalizar Cualquier Cambio
 1. Verifica que las escenas y scripts de Godot arranquen sin errores en modo headless si el binario está disponible (`./tools/godot/Godot_v4.7.2-stable_linux.x86_64 --headless --path godot-project --quit-after 2`).
 2. Si editaste `.github/workflows/*.yml`, valida la sintaxis YAML y que todas las acciones y URLs referenciadas existan realmente.
-3. Si editaste `blender-scripts/`, verifica sintaxis Python y consistencia de nombres de nodos exportados.
+3. Si editaste `blender-scripts/`, verifica sintaxis Python, regenera los `.glb` con Blender en `tools/blender/` (e importa con Godot `--import --quit`) y comprueba consistencia de nombres de nodos exportados.
 4. No leas ni modifiques archivos ajenos a la tarea solicitada.

@@ -29,6 +29,7 @@ from build_hotel_props import (
     build_hotel_plant,
     build_terrorist_pill,
 )
+from build_hotel_building import build_hotel_building
 from render_previews import render_all_previews
 
 
@@ -47,6 +48,7 @@ def main():
         ("hotel_pillar.glb", build_hotel_pillar),
         ("hotel_plant.glb", build_hotel_plant),
         ("terrorist_pill.glb", build_terrorist_pill),
+        ("hotel_building.glb", build_hotel_building),
     ]
 
     for filename, builder in builders:

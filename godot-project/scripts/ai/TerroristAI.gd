@@ -16,7 +16,7 @@ enum State { GUARD, ALERT, COMBAT, RELOADING, NEUTRALIZED }
 @export_group("Combate Terrorista")
 @export var max_health: float = 100.0
 @export var move_speed: float = 3.2
-@export var detection_range: float = 24.0
+@export var detection_range: float = 28.0
 @export var fov_degrees: float = 125.0
 @export var ak_damage: float = 11.0
 @export var ak_mag_size: int = 24
@@ -198,6 +198,8 @@ func _physics_process(delta: float) -> void:
 			_process_reload(delta)
 
 	move_and_slide()
+	if state == State.ALERT or state == State.COMBAT:
+		_try_open_blocking_door()
 
 
 func _process_guard(delta: float) -> void:
@@ -312,12 +314,12 @@ func _fire_ak_round() -> void:
 	)).normalized()
 
 	var space_state := get_world_3d().direct_space_state
-	var query := PhysicsRayQueryParameters3D.create(aim_origin, aim_origin + dir * 32.0)
+	var query := PhysicsRayQueryParameters3D.create(aim_origin, aim_origin + dir * 34.0, 1)
 	query.exclude = [self]
 	var hit := space_state.intersect_ray(query)
 	if hit and hit.get("collider") == _player:
 		if _player.has_method("apply_damage"):
-			_player.apply_damage(ak_damage)
+			_player.apply_damage(ak_damage, global_position)
 
 
 func _eject_ak_casing() -> void:
@@ -375,6 +377,15 @@ func _move_along_nav(delta: float, spd: float) -> void:
 		velocity.z = lerpf(velocity.z, dir.z * spd, delta * 8.0)
 		if state != State.COMBAT:
 			rotation.y = lerp_angle(rotation.y, atan2(-dir.x, -dir.z), delta * 6.0)
+
+
+func _try_open_blocking_door() -> void:
+	for i in get_slide_collision_count():
+		var col := get_slide_collision(i).get_collider()
+		if col and col.has_meta("hotel_door_owner"):
+			var door = col.get_meta("hotel_door_owner")
+			if door and not door.get("is_open") and door.has_method("set_open"):
+				door.set_open(true)
 
 
 func _check_player_visibility() -> bool:

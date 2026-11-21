@@ -1,12 +1,13 @@
 # SWAT: Asalto al Hotel
 
-Juego táctico 3D en primera persona (FPS) diseñado específicamente para dispositivos móviles Android (arquitecturas de **32 bits `armeabi-v7a` y 64 bits `arm64-v8a`**), desarrollado en **Godot 4.7.2-stable** con assets 3D generados proceduralmente en **Blender 4.5.16 LTS** mediante scripts de Python en GitHub Actions.
+Juego táctico 3D en primera persona (FPS) diseñado específicamente para dispositivos móviles Android (arquitecturas de **32 bits `armeabi-v7a` y 64 bits `arm64-v8a`**), desarrollado en **Godot 4.7.2-stable** con todos los escenarios, armas y assets 3D generados en **Blender 4.5.16 LTS** mediante scripts de Python (`godot-project/assets/models/*.glb`).
 
 ---
 
 ## Características Principales
 
-- **Objetivo de la Misión 1**: Despejar un hotel de **2 pisos** (vestíbulo, pasillo trasero, escalera central, mezanine y 5 habitaciones con puertas animadas 101–102 y 201–203) tomado por terroristas.
+- **Objetivo de la Misión 1**: Despejar el **Gran Hotel Corona de 2 pisos** (`36m x 32m`, modelo `hotel_building.glb` generado en Blender con colisionadores `-col` integrados): gran atrium con candelabro de cristal y techo artesonado, recepción con casillero y carro de equipaje, lounge bar, banco de ascensores, escalera imperial con balaustradas y **7 salas/suites amuebladas** (`101–103` y `201–204`) defendidas por **10 terroristas**.
+- **Gráficos Híbridos Vulkan 1.1 + OpenGL ES 3.0**: Configurado con renderizador `mobile` (**Vulkan 1.1**) en Android cuando el procesador lo soporta, con `fallback_to_opengl3=true` automático hacia **OpenGL ES 3.0** (`gl_compatibility`) en dispositivos antiguos, además de texturas PBR empaquetadas desde Blender, `ReflectionProbe`, tonemapping ACES y glow sutil.
 - **Agente SWAT y Carabina M4 (`PlayerWeaponM4.gd` + `m4.glb`)**:
   1. **Animación de arma**: respiración, balanceo al caminar/esprintar, lag de cámara y transición suave a mira holográfica (ADS).
   2. **Animación de disparo**: retroceso del arma, retroceso mecánico de `M4_Bolt` y elevación controlada de cámara.
@@ -15,12 +16,13 @@ Juego táctico 3D en primera persona (FPS) diseñado específicamente para dispo
   5. **Expulsión física de casquillos**: spawn de `ShellCasing.tscn` (`shell_casing.glb`) con giro, rebote y sonido metálico desde `EjectionPort`.
 - **IA Terrorista (`TerroristAI.gd` + `ak47.glb`)**:
   - Máquina de estados (`GUARD`, `ALERT`, `COMBAT`, `RELOADING`, `NEUTRALIZED`).
-  - Navegación 3D sobre `NavigationRegion3D`, reacción al sonido de disparos y puertas abiertas, cobertura/desplazamiento lateral y ráfagas de AK-47 con fogonazo, cerrojo móvil (`AK47_Bolt`), recarga de cargador (`AK47_Magazine`) y casquillos físicos.
+  - Navegación 3D sobre `NavigationRegion3D`, apertura de puertas cerradas en alerta/combate, capas de colisión dedicadas para hitboxes precisas, cobertura/desplazamiento lateral y ráfagas de AK-47 con fogonazo, cerrojo móvil (`AK47_Bolt`), recarga de cargador (`AK47_Magazine`) y casquillos físicos.
 - **Interfaz Móvil Táctica (`MobileHUD.gd` + `VirtualJoystick.gd`)**:
-  - Joystick izquierdo multi-touch independiente, área derecha de puntería, botón de disparo que permite apuntar simultáneamente mientras se mantiene pulsado, botones ergonómicos de Mira (ADS), Recargar, Agacharse, Saltar e Interactuar con Puertas.
+  - Joystick izquierdo multi-touch centrado (`pivot_offset`), área derecha de puntería e **indicador direccional de daño**.
+  - Botones circulares ergonómicos dispuestos en arco alrededor del pulgar derecho (`DISPARAR` con aim simultáneo, `MIRA`, `RECARGAR`, `AGACHAR` y `SALTAR`) sin tapar el arma, y panel de munición en esquina superior derecha.
   - Pantallas dedicadas e independientes: Menú Principal (`MainMenu`), Ajustes Táctiles (`SettingsScreen`) y Guía de Controles (`ControlsGuideScreen`).
 - **Audio Procedural Sin Licencias Restrictivas (`AudioSynth.gd`)**:
-  - Síntesis en tiempo de carga de disparos M4/AK-47, casquillos, clics mecánicos de recarga, puertas e impactos.
+  - Síntesis en tiempo de carga de disparos M4/AK-47, casquillos, clics mecánicos de recarga, puertas e impactos con límite de voces simultáneas para estabilidad móvil.
 - **Distribución APK Directa**:
   - Configurado para exportación directa como `.apk` (no `.aab` exclusivo de tienda), compatible con **Uptodown** e instalación directa en Android `7.0+` (`min_sdk = 24`, `target_sdk = 34`).
 
@@ -56,8 +58,8 @@ Ambos workflows se activan **únicamente de forma manual** (`workflow_dispatch`)
   2. Descarga y cachea **Godot 4.7.2-stable** y sus plantillas de exportación Android.
   3. Cachea la carpeta de recursos importados `godot-project/.godot`.
   4. Genera `debug.keystore` y registra las rutas de SDK/JDK en `editor_settings-4.7.tres`.
-  5. Compila el preset `"Android"` hacia `build/android/swat_asalto_al_hotel_debug.apk`.
-  6. Verifica la firma con `apksigner` y sube el artefacto `swat-asalto-al-hotel-debug-apk`.
+  5. Compila por separado los presets `"Android arm64-v8a"` (64 bits -> `build/android/swat_asalto_al_hotel_arm64-v8a_debug.apk`) y `"Android armeabi-v7a"` (32 bits -> `build/android/swat_asalto_al_hotel_armeabi-v7a_debug.apk`).
+  6. Verifica la firma de ambos APKs con `apksigner` y los sube como artefactos separados (`swat-asalto-al-hotel-arm64-v8a-debug-apk` y `swat-asalto-al-hotel-armeabi-v7a-debug-apk`).
 
 ---
 

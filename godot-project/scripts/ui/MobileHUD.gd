@@ -1,10 +1,9 @@
 # MobileHUD.gd
 # Interfaz táctica ergonómica para móvil durante la misión en el hotel.
-# Permite:
-#   - Apuntar arrastrando sobre el área derecha de la pantalla
-#   - Disparar Y apuntar al mismo tiempo manteniendo el botón DISPARAR (comodidad estilo FPS móvil)
-#   - Botones de acceso rápido para Mira (ADS), Recargar, Agacharse, Saltar y Abrir/Cerrar Puerta
-#   - Indicadores claros de salud SWAT, munición M4, enemigos restantes, hitmarker y viñeta de daño.
+# Disposición tipo shooter táctico profesional en arco alrededor del pulgar derecho:
+#   - DISPARAR (botón circular principal que permite apuntar simultáneamente)
+#   - MIRA (ADS), RECARGAR, SALTAR y AGACHAR dispuestos en arco sin cubrir el arma
+#   - Indicador de munición en esquina superior derecha, salud, objetivos y daño direccional.
 
 extends CanvasLayer
 
@@ -23,11 +22,15 @@ signal pause_requested
 @onready var hp_bar: ProgressBar = $TopBar/HealthBox/HealthBar
 @onready var hp_label: Label = $TopBar/HealthBox/HealthValue
 @onready var enemies_label: Label = $TopBar/MissionStatus/EnemiesLabel
-@onready var ammo_label: Label = $TouchLayer/RightControls/AmmoPanel/AmmoVBox/AmmoLabel
-@onready var reload_label: Label = $TouchLayer/RightControls/AmmoPanel/AmmoVBox/ReloadHint
+@onready var ammo_label: Label = $TouchLayer/AmmoPanel/AmmoVBox/AmmoLabel
+@onready var reload_label: Label = $TouchLayer/AmmoPanel/AmmoVBox/ReloadHint
 @onready var crosshair_root: Control = $CrosshairRoot
 @onready var hitmarker: Control = $CrosshairRoot/Hitmarker
 @onready var damage_vignette: ColorRect = $DamageVignette
+@onready var edge_left: ColorRect = $DamageEdges/EdgeLeft
+@onready var edge_right: ColorRect = $DamageEdges/EdgeRight
+@onready var edge_top: ColorRect = $DamageEdges/EdgeTop
+@onready var edge_bottom: ColorRect = $DamageEdges/EdgeBottom
 
 var _player: CharacterBody3D
 var _weapon: Node3D
@@ -35,6 +38,7 @@ var _look_touch_idx: int = -1
 var _fire_touch_idx: int = -1
 var _hitmarker_timer: float = 0.0
 var _damage_flash: float = 0.0
+var _edge_flash := {"left": 0.0, "right": 0.0, "top": 0.0, "bottom": 0.0}
 var _last_hp: float = 100.0
 
 
@@ -48,6 +52,12 @@ func bind_player(player: CharacterBody3D, weapon: Node3D) -> void:
 
 	_player.health_changed.connect(_on_health_changed)
 	_player.door_prompt_changed.connect(_on_door_prompt_changed)
+	if _player.has_signal("ads_changed"):
+		_player.ads_changed.connect(_on_ads_changed)
+	if _player.has_signal("crouch_changed"):
+		_player.crouch_changed.connect(_on_crouch_changed)
+	if _player.has_signal("damage_taken_from"):
+		_player.damage_taken_from.connect(_on_damage_taken_from)
 	if _weapon:
 		_weapon.ammo_changed.connect(_on_ammo_changed)
 		_weapon.shot_fired.connect(_on_shot_fired)
@@ -111,6 +121,19 @@ func _process(delta: float) -> void:
 		if damage_vignette:
 			damage_vignette.modulate.a = _damage_flash
 
+	for dir_key in _edge_flash.keys():
+		if _edge_flash[dir_key] > 0.0:
+			_edge_flash[dir_key] = maxf(0.0, _edge_flash[dir_key] - delta * 1.8)
+
+	if edge_left:
+		edge_left.modulate.a = _edge_flash["left"]
+	if edge_right:
+		edge_right.modulate.a = _edge_flash["right"]
+	if edge_top:
+		edge_top.modulate.a = _edge_flash["top"]
+	if edge_bottom:
+		edge_bottom.modulate.a = _edge_flash["bottom"]
+
 
 func _on_look_pad_input(event: InputEvent) -> void:
 	if _player == null:
@@ -157,13 +180,54 @@ func _on_fire_button_input(event: InputEvent) -> void:
 
 func _on_health_changed(hp: float, max_hp: float) -> void:
 	if hp < _last_hp:
-		_damage_flash = 0.65
+		_damage_flash = 0.55
 	_last_hp = hp
 	if hp_bar:
 		hp_bar.max_value = max_hp
 		hp_bar.value = hp
 	if hp_label:
 		hp_label.text = "%d HP" % int(ceilf(hp))
+
+
+func _on_damage_taken_from(attacker_pos: Vector3) -> void:
+	if _player == null:
+		return
+	var to_attacker := attacker_pos - _player.global_position
+	to_attacker.y = 0.0
+	if to_attacker.length_squared() < 0.001:
+		return
+	var dir := to_attacker.normalized()
+	var forward := (-_player.global_transform.basis.z)
+	forward.y = 0.0
+	forward = forward.normalized()
+	var right := _player.global_transform.basis.x
+	right.y = 0.0
+	right = right.normalized()
+
+	var f_dot := forward.dot(dir)
+	var r_dot := right.dot(dir)
+	if absf(r_dot) > absf(f_dot):
+		if r_dot > 0.0:
+			_edge_flash["right"] = 0.95
+		else:
+			_edge_flash["left"] = 0.95
+	else:
+		if f_dot > 0.0:
+			_edge_flash["top"] = 0.95
+		else:
+			_edge_flash["bottom"] = 0.95
+
+
+func _on_ads_changed(enabled: bool) -> void:
+	if btn_ads:
+		btn_ads.modulate = Color(0.55, 0.88, 1.0, 1.0) if enabled else Color.WHITE
+	if crosshair_root:
+		crosshair_root.scale = Vector2(0.75, 0.75) if enabled else Vector2.ONE
+
+
+func _on_crouch_changed(enabled: bool) -> void:
+	if btn_crouch:
+		btn_crouch.modulate = Color(1.0, 0.82, 0.40, 1.0) if enabled else Color.WHITE
 
 
 func _on_ammo_changed(mag_ammo: int, reserve: int, is_reloading: bool) -> void:

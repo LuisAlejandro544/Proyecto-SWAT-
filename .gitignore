@@ -7,5 +7,9 @@ coverage/
 .env*
 !.env.example
 tools/godot/
+tools/blender/
 godot-project/.godot/
 blender-scripts/previews/
+blender-scripts/previews/*.png
+godot-project/assets/models/*_tex_*.png
+godot-project/assets/models/*_tex_*.png.import

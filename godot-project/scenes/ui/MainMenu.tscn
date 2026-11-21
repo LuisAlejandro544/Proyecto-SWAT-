@@ -134,15 +134,15 @@ text = "MISIÓN 01 · INFORME TÁCTICO"
 [node name="MissionTitle" type="Label" parent="Layout/RightColumn/MissionCard/VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
-text = "Hotel Corona (2 Pisos)"
+text = "Gran Hotel Corona (2 Pisos)"
 
 [node name="MissionBrief" type="Label" parent="Layout/RightColumn/MissionCard/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.82, 0.86, 0.92, 1)
 theme_override_font_sizes/font_size = 17
-text = "• Objetivo: Despejar los 2 pisos del hotel y neutralizar a 7 terroristas armados con rifles AK-47.
+text = "• Objetivo: Despejar los 2 pisos del Gran Hotel y neutralizar a 10 terroristas armados con rifles AK-47.
 • Equipamiento: Carabina M4A1 con mira holográfica, fogonazo táctico y expulsión de casquillos.
-• Entorno: Lobby amplio, escalera central, mezanine y 5 habitaciones con puertas animadas."
+• Entorno: Gran lobby con candelabro, lounge bar, recepción, ascensores, mezanine y 7 salas/suites con puertas."
 autowrap_mode = 2
 
 [node name="BtnStartMission" type="Button" parent="Layout/RightColumn/MissionCard/VBox"]

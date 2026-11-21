@@ -63,11 +63,10 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.84, 0.88, 0.94, 1)
 theme_override_font_sizes/font_size = 18
 text = "• PULGAR IZQUIERDO (Joystick): Mueve al agente SWAT en cualquier dirección. Empuja al máximo hacia adelante para correr.
-• PULGAR DERECHO (Pantalla): Arrastra el dedo por el lado derecho para girar la cámara y apuntar.
-• BOTÓN DISPARAR: Mantén pulsado para disparo automático de la M4A1. Puedes deslizar el dedo mientras disparas para seguir corrigiendo la mira.
-• MIRA (ADS): Activa la mira holográfica para mayor precisión.
-• RECARGAR / AGACHAR / SALTAR: Ubicados en arco cómodo alrededor del pulgar derecho para cubrirte detrás de muebles del hotel.
-• PUERTAS DE HABITACIÓN: Acércate a cualquier puerta y pulsa el botón central ABRIR / CERRAR para despejar habitaciones."
+• PULGAR DERECHO (Pantalla): Arrastra el dedo por la pantalla para girar la cámara y apuntar con precisión.
+• BOTÓN DISPARAR: Botón circular principal. Mantén pulsado para ráfaga automática y desliza el dedo para corregir la mira al disparar.
+• ARCO TÁCTICO (MIRA / RECARGAR / AGACHAR / SALTAR): Botones circulares cómodos alrededor del pulgar derecho sin tapar el arma.
+• PUERTAS E INDICADOR DE DAÑO: Acércate a una puerta para abrirla; los bordes rojos indican la dirección del fuego enemigo."
 autowrap_mode = 2
 
 [node name="BtnBack" type="Button" parent="CenterPanel/Card/VBox"]

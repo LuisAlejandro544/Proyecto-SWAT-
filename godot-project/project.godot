@@ -8,7 +8,7 @@ config_version=5
 config/name="SWAT: Asalto al Hotel"
 config/description="Juego táctico 3D FPS móvil SWAT vs Terroristas con M4, AK-47 y hotel de 2 pisos."
 run/main_scene="res://scenes/ui/MainMenu.tscn"
-config/features=PackedStringArray("4.7", "GL Compatibility")
+config/features=PackedStringArray("4.7", "Mobile")
 config/icon="res://icon.svg"
 
 [autoload]
@@ -30,6 +30,9 @@ pointing/emulate_mouse_from_touch=true
 
 [rendering]
 
-renderer/rendering_method="gl_compatibility"
-renderer/rendering_method.mobile="gl_compatibility"
+renderer/rendering_method="mobile"
+renderer/rendering_method.mobile="mobile"
+rendering_device/driver.android="vulkan"
+rendering_device/fallback_to_opengl3=true
+anti_aliasing/quality/msaa_3d=1
 textures/vram_compression/import_etc2_astc=true

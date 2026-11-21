@@ -12,12 +12,13 @@ Guía directa para orientarse en segundos al retomar el repositorio, diagnostica
 | Ajustar animaciones, cadencia, retroceso o recarga del M4 | `godot-project/scripts/weapons/PlayerWeaponM4.gd` + `scenes/weapons/M4Rig.tscn` |
 | Ajustar física o duración de casquillos | `godot-project/scripts/weapons/ShellCasing.gd` + `scenes/weapons/ShellCasing.tscn` |
 | Modificar comportamiento, visión, cobertura o AK-47 de IA | `godot-project/scripts/ai/TerroristAI.gd` + `scenes/ai/Terrorist.tscn` |
-| Cambiar distribución del hotel de 2 pisos o NavigationMesh | `godot-project/scripts/world/HotelArchitecture.gd` |
+| Cambiar distribución del Gran Hotel (36x32m) o texturas | `blender-scripts/models/build_hotel_building.py` -> `hotel_building.glb` + `HotelMission01.tscn` |
+| Ajustar horneado del NavigationMesh del hotel | `godot-project/scripts/world/HotelArchitecture.gd` |
 | Ajustar apertura/cierre de puertas de habitaciones | `godot-project/scripts/world/HotelDoor.gd` + `scenes/world/HotelDoor.tscn` |
 | Ajustar conteo de enemigos, pausa o victoria/derrota | `godot-project/scripts/world/HotelMissionManager.gd` + `scenes/levels/HotelMission01.tscn` |
-| Cambiar controles táctiles o joystick virtual | `godot-project/scripts/ui/MobileHUD.gd` + `VirtualJoystick.gd` + `scenes/ui/MobileHUD.tscn` |
+| Cambiar controles táctiles en arco, daño direccional o joystick | `godot-project/scripts/ui/MobileHUD.gd` + `VirtualJoystick.gd` + `scenes/ui/MobileHUD.tscn` |
 | Cambiar menú principal, ajustes o guía de controles | `godot-project/scripts/ui/MainMenu.gd`, `SettingsScreen.gd`, `ControlsGuideScreen.gd` |
-| Cambiar sonidos procedurales o persistencia de opciones | `godot-project/scripts/autoload/AudioSynth.gd`, `GameSettings.gd` |
+| Cambiar sonidos procedurales (límite de voces) o persistencia | `godot-project/scripts/autoload/AudioSynth.gd`, `GameSettings.gd` |
 | Modificar geometría o piezas animables de modelos 3D | `blender-scripts/models/build_*.py` + `blender-scripts/lib/mesh_utils.py` |
 | Ajustar render de previsualizaciones PNG | `blender-scripts/render_previews.py` |
 | Cambiar configuración APK (ABIs, SDK, paquete, firma) | `godot-project/export_presets.cfg` |
@@ -64,7 +65,7 @@ python3 -m py_compile blender-scripts/*.py blender-scripts/lib/*.py blender-scri
 ---
 
 ## 4. Flujo Recomendado Para Cambios en Assets 3D
-1. Edita el generador correspondiente en `blender-scripts/models/`.
-2. Ejecuta manualmente en GitHub Actions **Generar Assets 3D en Blender (Manual)**.
-3. Descarga y revisa el artefacto `blender-asset-previews-png` para comprobar proporciones, orientación y piezas separadas.
+1. Edita el generador correspondiente en `blender-scripts/models/` (`build_m4.py`, `build_hotel_building.py`, etc.).
+2. Ejecuta Blender localmente en `tools/blender/blender --background --python blender-scripts/generate_all.py` (o usa el workflow manual **Generar Assets 3D en Blender** en GitHub Actions) para exportar los `.glb` actualizados a `godot-project/assets/models/`.
+3. Ejecuta `./tools/godot/Godot_v4.7.2-stable_linux.x86_64 --headless --path godot-project --import --quit` para actualizar los `.glb.import`.
 4. Ejecuta manualmente **Compilar APK Debug Android (Godot 4.7.2-stable)** para descargar e instalar el nuevo `.apk` en Android.
