@@ -1,10 +1,7 @@
-name: Generar Assets 3D en Blender
+name: Generar Assets 3D en Blender (Manual)
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - 'blender-scripts/**'
 
 permissions:
   contents: write
@@ -19,7 +16,7 @@ jobs:
       - name: Instalar dependencias de sistema para Blender headless
         run: |
           sudo apt-get update
-          sudo apt-get install -y xz-utils libx11-6 libxi6 libxrender1 libgl1 libxkbcommon0 libsm6
+          sudo apt-get install -y xz-utils libx11-6 libxi6 libxrender1 libgl1 libxkbcommon0 libsm6 libice6
 
       - name: Cachear Blender 4.5.16 LTS
         id: cache-blender
@@ -31,7 +28,8 @@ jobs:
       - name: Descargar e instalar Blender 4.5.16 LTS
         if: steps.cache-blender.outputs.cache-hit != 'true'
         run: |
-          mkdir -p /opt/blender
+          sudo mkdir -p /opt/blender
+          sudo chown -R "$USER":"$USER" /opt/blender
           curl -L -sS -o /tmp/blender.tar.xz https://download.blender.org/release/Blender4.5/blender-4.5.16-linux-x64.tar.xz
           tar -xf /tmp/blender.tar.xz -C /opt/blender --strip-components=1
           rm /tmp/blender.tar.xz
@@ -46,14 +44,14 @@ jobs:
           name: blender-asset-previews-png
           path: blender-scripts/previews/*.png
 
-      - name: Guardar modelos GLB y PNG generados en el repositorio
+      - name: Guardar modelos GLB generados en el repositorio
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add godot-project/assets/models/*.glb blender-scripts/previews/*.png
+          git add godot-project/assets/models/*.glb
           if ! git diff --cached --quiet; then
-            git commit -m "Actualiza modelos 3D GLB y previsualizaciones PNG desde Blender"
+            git commit -m "Actualiza modelos 3D GLB generados desde Blender"
             git push
           else
-            echo "Sin cambios en los modelos generados."
+            echo "Sin cambios en los modelos GLB."
           fi

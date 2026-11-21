@@ -1,0 +1,132 @@
+name: Compilar APK Debug Android (Godot 4.7.2-stable)
+
+on:
+  workflow_dispatch:
+
+env:
+  GODOT_TAG: "4.7.2-stable"
+  GODOT_TEMPLATE_DIR: "4.7.2.stable"
+  APK_OUTPUT: "build/android/swat_asalto_al_hotel_debug.apk"
+
+jobs:
+  build-android-debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar proyecto completo
+        uses: actions/checkout@v4
+
+      - name: Configurar Java JDK 17 (requerido para keytool y firma Android)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Configurar Android SDK y Build Tools (apksigner)
+        uses: android-actions/setup-android@v3
+
+      - name: Asegurar Android Build-Tools para apksigner
+        run: |
+          if [ -z "$(find "${ANDROID_HOME}/build-tools" -name apksigner 2>/dev/null)" ]; then
+            yes | sdkmanager --licenses >/dev/null 2>&1 || true
+            sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+          else
+            echo "apksigner ya disponible en ${ANDROID_HOME}/build-tools"
+          fi
+
+      - name: Cachear Godot 4.7.2-stable y plantillas de exportación Android
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.local/bin/godot
+            ~/.local/share/godot/export_templates/${{ env.GODOT_TEMPLATE_DIR }}
+          key: godot-${{ env.GODOT_TAG }}-android-templates-v2
+
+      - name: Descargar e instalar Godot 4.7.2-stable y plantillas Android
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/.local/bin ~/.local/share/godot/export_templates/${{ env.GODOT_TEMPLATE_DIR }}
+          curl -L -sS -o /tmp/godot.zip "https://github.com/godotengine/godot/releases/download/${{ env.GODOT_TAG }}/Godot_v${{ env.GODOT_TAG }}_linux.x86_64.zip"
+          unzip -q -o /tmp/godot.zip -d /tmp/godot_bin
+          mv /tmp/godot_bin/Godot_v${{ env.GODOT_TAG }}_linux.x86_64 ~/.local/bin/godot
+          chmod +x ~/.local/bin/godot
+          rm -rf /tmp/godot.zip /tmp/godot_bin
+
+          curl -L -sS -o /tmp/templates.tpz "https://github.com/godotengine/godot/releases/download/${{ env.GODOT_TAG }}/Godot_v${{ env.GODOT_TAG }}_export_templates.tpz"
+          mkdir -p /tmp/tpz_extract
+          unzip -q -o /tmp/templates.tpz "templates/android_*" "templates/icudt_godot.dat" "templates/version.txt" -d /tmp/tpz_extract
+          mv /tmp/tpz_extract/templates/* ~/.local/share/godot/export_templates/${{ env.GODOT_TEMPLATE_DIR }}/
+          rm -rf /tmp/templates.tpz /tmp/tpz_extract
+
+          ~/.local/bin/godot --version
+          ls -lh ~/.local/share/godot/export_templates/${{ env.GODOT_TEMPLATE_DIR }}/
+
+      - name: Cachear importación de recursos de Godot (.godot)
+        uses: actions/cache@v4
+        with:
+          path: godot-project/.godot
+          key: godot-import-${{ env.GODOT_TAG }}-${{ hashFiles('godot-project/project.godot', 'godot-project/assets/**', 'godot-project/scenes/**', 'godot-project/scripts/**') }}
+          restore-keys: |
+            godot-import-${{ env.GODOT_TAG }}-
+
+      - name: Generar debug.keystore y configurar rutas Android en Godot
+        run: |
+          mkdir -p ~/.local/share/godot/keystores ~/.android ~/.config/godot
+          if [ ! -f ~/.local/share/godot/keystores/debug.keystore ]; then
+            keytool -genkeypair -v \
+              -keystore ~/.local/share/godot/keystores/debug.keystore \
+              -storepass android \
+              -alias androiddebugkey \
+              -keypass android \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000 \
+              -dname "CN=Android Debug,O=Android,C=US"
+          fi
+          cp -f ~/.local/share/godot/keystores/debug.keystore ~/.android/debug.keystore
+
+          # Inicializa configuración del editor para registrar SDK de Android y Java
+          ~/.local/bin/godot --headless --path godot-project --import --quit || true
+
+          SETTINGS_FILE="$HOME/.config/godot/editor_settings-4.7.tres"
+          touch "$SETTINGS_FILE"
+          python3 - <<'PY'
+          import os, re
+          path = os.path.expanduser("~/.config/godot/editor_settings-4.7.tres")
+          content = open(path, "r", encoding="utf-8").read() if os.path.exists(path) else ""
+          if not content.strip():
+              content = '[gd_resource type="EditorSettings" format=3]\n\n[resource]\n'
+          updates = {
+              "export/android/android_sdk_path": f'"{os.environ.get("ANDROID_HOME", "/usr/local/lib/android/sdk")}"',
+              "export/android/java_sdk_path": f'"{os.environ.get("JAVA_HOME", "")}"',
+              "export/android/debug_keystore": f'"{os.path.expanduser("~/.local/share/godot/keystores/debug.keystore")}"',
+              "export/android/debug_keystore_user": '"androiddebugkey"',
+              "export/android/debug_keystore_pass": '"android"',
+          }
+          for key, val in updates.items():
+              pattern = rf'^{re.escape(key)}\s*=.*$'
+              line = f'{key} = {val}'
+              if re.search(pattern, content, flags=re.MULTILINE):
+                  content = re.sub(pattern, line, content, flags=re.MULTILINE)
+              else:
+                  content = content.rstrip() + "\n" + line + "\n"
+          open(path, "w", encoding="utf-8").write(content)
+          PY
+
+      - name: Compilar APK Debug con Godot 4.7.2-stable
+        run: |
+          mkdir -p "$(dirname "${{ env.APK_OUTPUT }}")"
+          ~/.local/bin/godot --headless --verbose --path godot-project --export-debug "Android" "../${{ env.APK_OUTPUT }}"
+          ls -lh "${{ env.APK_OUTPUT }}"
+
+      - name: Verificar firma del APK Debug
+        run: |
+          APKSIGNER="$(find "${ANDROID_HOME}/build-tools" -name apksigner | sort -V | tail -n 1)"
+          "$APKSIGNER" verify --verbose "${{ env.APK_OUTPUT }}"
+
+      - name: Subir APK Debug como artefacto descargable
+        uses: actions/upload-artifact@v4
+        with:
+          name: swat-asalto-al-hotel-debug-apk
+          path: ${{ env.APK_OUTPUT }}
+          retention-days: 30
