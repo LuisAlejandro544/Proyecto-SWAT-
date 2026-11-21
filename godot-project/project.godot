@@ -1,0 +1,34 @@
+; Engine configuration file.
+; Configuración de Godot 4.7.2-stable para juego móvil FPS SWAT: Asalto al Hotel (Android 32/64 bits).
+
+config_version=5
+
+[application]
+
+config/name="SWAT: Asalto al Hotel"
+config/description="Juego táctico 3D FPS móvil SWAT vs Terroristas con M4, AK-47 y hotel de 2 pisos."
+run/main_scene="res://scenes/ui/MainMenu.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+config/icon="res://icon.svg"
+
+[autoload]
+
+GameSettings="*res://scripts/autoload/GameSettings.gd"
+AudioSynth="*res://scripts/autoload/AudioSynth.gd"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/handheld/orientation=0
+
+[input_devices]
+
+pointing/emulate_mouse_from_touch=true
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"

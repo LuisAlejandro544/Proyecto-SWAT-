@@ -1,0 +1,392 @@
+[gd_scene load_steps=7 format=3 uid="uid://mobile_hud_scene"]
+
+[ext_resource type="Script" path="res://scripts/ui/MobileHUD.gd" id="1_hud_script"]
+[ext_resource type="Script" path="res://scripts/ui/VirtualJoystick.gd" id="2_joy_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_joy_ring"]
+bg_color = Color(0.08, 0.11, 0.16, 0.45)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.38, 0.72, 0.96, 0.65)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_joy_knob"]
+bg_color = Color(0.32, 0.78, 0.98, 0.85)
+corner_radius_top_left = 40
+corner_radius_top_right = 40
+corner_radius_bottom_right = 40
+corner_radius_bottom_left = 40
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fire_btn"]
+bg_color = Color(0.86, 0.24, 0.20, 0.82)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.68, 0.56, 0.9)
+corner_radius_top_left = 60
+corner_radius_top_right = 60
+corner_radius_bottom_right = 60
+corner_radius_bottom_left = 60
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_fill"]
+bg_color = Color(0.18, 0.76, 0.96, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="MobileHUD" type="CanvasLayer"]
+script = ExtResource("1_hud_script")
+
+[node name="DamageVignette" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.85, 0.08, 0.08, 0.42)
+
+[node name="TopBar" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 74.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="TopBg" type="ColorRect" parent="TopBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.05, 0.07, 0.11, 0.68)
+
+[node name="HealthBox" type="HBoxContainer" parent="TopBar"]
+layout_mode = 1
+offset_left = 20.0
+offset_top = 14.0
+offset_right = 340.0
+offset_bottom = 60.0
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="SwatTag" type="Label" parent="TopBar/HealthBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "SWAT"
+
+[node name="HealthBar" type="ProgressBar" parent="TopBar/HealthBox"]
+custom_minimum_size = Vector2(180, 22)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_fill")
+value = 100.0
+show_percentage = false
+
+[node name="HealthValue" type="Label" parent="TopBar/HealthBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "100 HP"
+
+[node name="MissionStatus" type="VBoxContainer" parent="TopBar"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -160.0
+offset_top = 10.0
+offset_right = 160.0
+offset_bottom = 64.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="MissionName" type="Label" parent="TopBar/MissionStatus"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.78, 0.92, 1)
+theme_override_font_sizes/font_size = 13
+text = "MISIÓN 01 · HOTEL CORONA (2 PISOS)"
+horizontal_alignment = 1
+
+[node name="EnemiesLabel" type="Label" parent="TopBar/MissionStatus"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.78, 0.34, 1)
+theme_override_font_sizes/font_size = 20
+text = "OBJETIVOS: 7 / 7"
+horizontal_alignment = 1
+
+[node name="PauseButton" type="Button" parent="TopBar"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -132.0
+offset_top = 11.0
+offset_right = -18.0
+offset_bottom = 63.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 18
+text = "PAUSA"
+
+[node name="CrosshairRoot" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Dot" type="ColorRect" parent="CrosshairRoot"]
+layout_mode = 0
+offset_left = 18.5
+offset_top = 18.5
+offset_right = 21.5
+offset_bottom = 21.5
+mouse_filter = 2
+color = Color(0.95, 0.98, 1, 0.92)
+
+[node name="TickTop" type="ColorRect" parent="CrosshairRoot"]
+layout_mode = 0
+offset_left = 19.0
+offset_top = 6.0
+offset_right = 21.0
+offset_bottom = 14.0
+mouse_filter = 2
+color = Color(0.95, 0.98, 1, 0.78)
+
+[node name="TickBot" type="ColorRect" parent="CrosshairRoot"]
+layout_mode = 0
+offset_left = 19.0
+offset_top = 26.0
+offset_right = 21.0
+offset_bottom = 34.0
+mouse_filter = 2
+color = Color(0.95, 0.98, 1, 0.78)
+
+[node name="TickLeft" type="ColorRect" parent="CrosshairRoot"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 19.0
+offset_right = 14.0
+offset_bottom = 21.0
+mouse_filter = 2
+color = Color(0.95, 0.98, 1, 0.78)
+
+[node name="TickRight" type="ColorRect" parent="CrosshairRoot"]
+layout_mode = 0
+offset_left = 26.0
+offset_top = 19.0
+offset_right = 34.0
+offset_bottom = 21.0
+mouse_filter = 2
+color = Color(0.95, 0.98, 1, 0.78)
+
+[node name="Hitmarker" type="Control" parent="CrosshairRoot"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="HM_A" type="ColorRect" parent="CrosshairRoot/Hitmarker"]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 19.0
+offset_right = 31.0
+offset_bottom = 21.0
+rotation = 0.785398
+pivot_offset = Vector2(11, 1)
+mouse_filter = 2
+
+[node name="HM_B" type="ColorRect" parent="CrosshairRoot/Hitmarker"]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 19.0
+offset_right = 31.0
+offset_bottom = 21.0
+rotation = -0.785398
+pivot_offset = Vector2(11, 1)
+mouse_filter = 2
+
+[node name="TouchLayer" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 74.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="LookPad" type="Control" parent="TouchLayer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+anchor_left = 0.32
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VirtualJoystick" type="Control" parent="TouchLayer"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 36.0
+offset_top = -236.0
+offset_right = 236.0
+offset_bottom = -36.0
+grow_vertical = 0
+script = ExtResource("2_joy_script")
+
+[node name="BaseRing" type="Panel" parent="TouchLayer/VirtualJoystick"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_joy_ring")
+
+[node name="Knob" type="Panel" parent="TouchLayer/VirtualJoystick/BaseRing"]
+layout_mode = 0
+offset_left = 65.0
+offset_top = 65.0
+offset_right = 135.0
+offset_bottom = 135.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_joy_knob")
+
+[node name="DoorInteractButton" type="Button" parent="TouchLayer"]
+visible = false
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -140.0
+offset_top = -132.0
+offset_right = 140.0
+offset_bottom = -64.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
+theme_override_font_sizes/font_size = 20
+text = "ABRIR PUERTA"
+
+[node name="RightControls" type="Control" parent="TouchLayer"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -360.0
+offset_top = -340.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="AmmoPanel" type="PanelContainer" parent="TouchLayer/RightControls"]
+layout_mode = 0
+offset_left = 120.0
+offset_top = 14.0
+offset_right = 334.0
+offset_bottom = 78.0
+mouse_filter = 2
+
+[node name="AmmoVBox" type="VBoxContainer" parent="TouchLayer/RightControls/AmmoPanel"]
+layout_mode = 2
+mouse_filter = 2
+alignment = 1
+
+[node name="AmmoLabel" type="Label" parent="TouchLayer/RightControls/AmmoPanel/AmmoVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "30 / 150"
+horizontal_alignment = 1
+
+[node name="ReloadHint" type="Label" parent="TouchLayer/RightControls/AmmoPanel/AmmoVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.64, 0.78, 0.92, 1)
+theme_override_font_sizes/font_size = 13
+text = "M4A1 · 5.56mm"
+horizontal_alignment = 1
+
+[node name="ReloadButton" type="Button" parent="TouchLayer/RightControls"]
+layout_mode = 0
+offset_left = 224.0
+offset_top = 92.0
+offset_right = 334.0
+offset_bottom = 156.0
+theme_override_font_sizes/font_size = 16
+text = "RECARGAR"
+
+[node name="AdsButton" type="Button" parent="TouchLayer/RightControls"]
+layout_mode = 0
+offset_left = 104.0
+offset_top = 112.0
+offset_right = 210.0
+offset_bottom = 176.0
+theme_override_font_sizes/font_size = 16
+text = "MIRA"
+
+[node name="JumpButton" type="Button" parent="TouchLayer/RightControls"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 160.0
+offset_right = 104.0
+offset_bottom = 224.0
+theme_override_font_sizes/font_size = 15
+text = "SALTAR"
+
+[node name="CrouchButton" type="Button" parent="TouchLayer/RightControls"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 242.0
+offset_right = 126.0
+offset_bottom = 308.0
+theme_override_font_sizes/font_size = 16
+text = "AGACHAR"
+
+[node name="FireButton" type="Panel" parent="TouchLayer/RightControls"]
+layout_mode = 0
+offset_left = 188.0
+offset_top = 186.0
+offset_right = 318.0
+offset_bottom = 316.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_fire_btn")
+
+[node name="FireLabel" type="Label" parent="TouchLayer/RightControls/FireButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 19
+text = "DISPARAR"
+horizontal_alignment = 1
+vertical_alignment = 1

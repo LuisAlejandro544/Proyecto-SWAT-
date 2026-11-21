@@ -1,0 +1,43 @@
+[gd_scene load_steps=6 format=3 uid="uid://m4_rig_scene"]
+
+[ext_resource type="Script" path="res://scripts/weapons/PlayerWeaponM4.gd" id="1_m4_script"]
+[ext_resource type="PackedScene" path="res://assets/models/m4.glb" id="2_m4_glb"]
+[ext_resource type="PackedScene" uid="uid://shell_casing_scene" path="res://scenes/weapons/ShellCasing.tscn" id="3_shell_scene"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_flash"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+albedo_color = Color(1, 0.78, 0.28, 0.92)
+disable_receive_shadows = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_flash_a"]
+material = SubResource("StandardMaterial3D_flash")
+size = Vector3(0.16, 0.035, 0.22)
+
+[sub_resource type="BoxMesh" id="BoxMesh_flash_b"]
+material = SubResource("StandardMaterial3D_flash")
+size = Vector3(0.035, 0.16, 0.22)
+
+[node name="WeaponM4" type="Node3D"]
+script = ExtResource("1_m4_script")
+shell_casing_scene = ExtResource("3_shell_scene")
+
+[node name="M4Model" parent="." instance=ExtResource("2_m4_glb")]
+
+[node name="MuzzleFlashRoot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.032, -0.512)
+visible = false
+
+[node name="MuzzleLight" type="OmniLight3D" parent="MuzzleFlashRoot"]
+light_color = Color(1, 0.74, 0.34, 1)
+light_energy = 0.0
+omni_range = 6.5
+
+[node name="FlashStarA" type="MeshInstance3D" parent="MuzzleFlashRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.10)
+mesh = SubResource("BoxMesh_flash_a")
+
+[node name="FlashStarB" type="MeshInstance3D" parent="MuzzleFlashRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.10)
+mesh = SubResource("BoxMesh_flash_b")

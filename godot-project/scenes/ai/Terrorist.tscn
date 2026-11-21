@@ -1,0 +1,83 @@
+[gd_scene load_steps=10 format=3 uid="uid://terrorist_ai_scene"]
+
+[ext_resource type="Script" path="res://scripts/ai/TerroristAI.gd" id="1_ai_script"]
+[ext_resource type="PackedScene" path="res://assets/models/terrorist_pill.glb" id="2_pill_glb"]
+[ext_resource type="PackedScene" path="res://assets/models/ak47.glb" id="3_ak47_glb"]
+[ext_resource type="PackedScene" uid="uid://shell_casing_scene" path="res://scenes/weapons/ShellCasing.tscn" id="4_shell_scene"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ai"]
+radius = 0.34
+height = 1.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ak_flash"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+albedo_color = Color(1, 0.68, 0.22, 0.92)
+disable_receive_shadows = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_ak_flash_a"]
+material = SubResource("StandardMaterial3D_ak_flash")
+size = Vector3(0.18, 0.04, 0.24)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ak_flash_b"]
+material = SubResource("StandardMaterial3D_ak_flash")
+size = Vector3(0.04, 0.18, 0.24)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body_hit"]
+radius = 0.38
+height = 1.28
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_head_hit"]
+radius = 0.28
+
+[node name="Terrorist" type="CharacterBody3D"]
+script = ExtResource("1_ai_script")
+shell_casing_scene = ExtResource("4_shell_scene")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_ai")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+path_desired_distance = 0.65
+target_desired_distance = 0.85
+
+[node name="LineOfSightRay" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.48, 0)
+target_position = Vector3(0, 0, -25)
+
+[node name="VisualRoot" type="Node3D" parent="."]
+
+[node name="TerroristModel" parent="VisualRoot" instance=ExtResource("2_pill_glb")]
+
+[node name="AKHolder" type="Node3D" parent="VisualRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.26, 1.12, -0.24)
+
+[node name="AK47Model" parent="VisualRoot/AKHolder" instance=ExtResource("3_ak47_glb")]
+
+[node name="MuzzleFlash" type="Node3D" parent="VisualRoot/AKHolder"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, -0.56)
+visible = false
+
+[node name="FlashA" type="MeshInstance3D" parent="VisualRoot/AKHolder/MuzzleFlash"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.10)
+mesh = SubResource("BoxMesh_ak_flash_a")
+
+[node name="FlashB" type="MeshInstance3D" parent="VisualRoot/AKHolder/MuzzleFlash"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.10)
+mesh = SubResource("BoxMesh_ak_flash_b")
+
+[node name="BodyHitbox" type="Area3D" parent="."]
+monitoring = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BodyHitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.72, 0)
+shape = SubResource("CapsuleShape3D_body_hit")
+
+[node name="HeadHitbox" type="Area3D" parent="."]
+monitoring = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HeadHitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.54, 0)
+shape = SubResource("SphereShape3D_head_hit")

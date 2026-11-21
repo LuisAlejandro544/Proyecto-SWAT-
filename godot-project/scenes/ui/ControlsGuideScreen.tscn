@@ -1,0 +1,77 @@
+[gd_scene load_steps=3 format=3 uid="uid://controls_guide_scene"]
+
+[ext_resource type="Script" path="res://scripts/ui/ControlsGuideScreen.gd" id="1_guide_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.09, 0.12, 0.17, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.28, 0.62, 0.92, 0.7)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+content_margin_left = 28.0
+content_margin_top = 24.0
+content_margin_right = 28.0
+content_margin_bottom = 24.0
+
+[node name="ControlsGuideScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_guide_script")
+
+[node name="Bg" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.055, 0.075, 0.11, 1)
+
+[node name="CenterPanel" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Card" type="PanelContainer" parent="CenterPanel"]
+custom_minimum_size = Vector2(720, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBox" type="VBoxContainer" parent="CenterPanel/Card"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="CenterPanel/Card/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "GUÍA DE CONTROLES MÓVIL"
+
+[node name="Body" type="Label" parent="CenterPanel/Card/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.84, 0.88, 0.94, 1)
+theme_override_font_sizes/font_size = 18
+text = "• PULGAR IZQUIERDO (Joystick): Mueve al agente SWAT en cualquier dirección. Empuja al máximo hacia adelante para correr.
+• PULGAR DERECHO (Pantalla): Arrastra el dedo por el lado derecho para girar la cámara y apuntar.
+• BOTÓN DISPARAR: Mantén pulsado para disparo automático de la M4A1. Puedes deslizar el dedo mientras disparas para seguir corrigiendo la mira.
+• MIRA (ADS): Activa la mira holográfica para mayor precisión.
+• RECARGAR / AGACHAR / SALTAR: Ubicados en arco cómodo alrededor del pulgar derecho para cubrirte detrás de muebles del hotel.
+• PUERTAS DE HABITACIÓN: Acércate a cualquier puerta y pulsa el botón central ABRIR / CERRAR para despejar habitaciones."
+autowrap_mode = 2
+
+[node name="BtnBack" type="Button" parent="CenterPanel/Card/VBox"]
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "VOLVER AL MENÚ PRINCIPAL"

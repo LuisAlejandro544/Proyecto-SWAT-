@@ -1,0 +1,6 @@
+{
+  "name": "Encuentra Gatos 3D",
+  "description": "Entorno base en Godot 4.7.2-stable compilado para Web con escena inicial Hello World.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

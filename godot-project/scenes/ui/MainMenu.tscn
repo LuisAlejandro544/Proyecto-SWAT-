@@ -1,0 +1,153 @@
+[gd_scene load_steps=4 format=3 uid="uid://main_menu_scene"]
+
+[ext_resource type="Script" path="res://scripts/ui/MainMenu.gd" id="1_menu_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+bg_color = Color(0.09, 0.12, 0.17, 0.94)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.24, 0.56, 0.85, 0.75)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+content_margin_left = 24.0
+content_margin_top = 24.0
+content_margin_right = 24.0
+content_margin_bottom = 24.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cta"]
+bg_color = Color(0.14, 0.52, 0.86, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_menu_script")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.055, 0.075, 0.11, 1)
+
+[node name="AccentStrip" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 8.0
+grow_horizontal = 2
+color = Color(0.22, 0.65, 0.96, 1)
+
+[node name="Layout" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 48.0
+offset_top = 42.0
+offset_right = -48.0
+offset_bottom = -42.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 36
+
+[node name="LeftColumn" type="VBoxContainer" parent="Layout"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="UnitTag" type="Label" parent="Layout/LeftColumn"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.35, 0.78, 0.98, 1)
+theme_override_font_sizes/font_size = 16
+text = "UNIDAD TÁCTICA MÓVIL · GODOT 4.7"
+
+[node name="TitleLabel" type="Label" parent="Layout/LeftColumn"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 44
+text = "SWAT: ASALTO
+AL HOTEL"
+
+[node name="SubtitleLabel" type="Label" parent="Layout/LeftColumn"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.78, 0.86, 1)
+theme_override_font_sizes/font_size = 18
+text = "Operativo táctico en primera persona optimizado para controles de dos pulgares."
+autowrap_mode = 2
+
+[node name="MenuButtons" type="VBoxContainer" parent="Layout/LeftColumn"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="BtnControls" type="Button" parent="Layout/LeftColumn/MenuButtons"]
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "GUÍA DE CONTROLES MÓVIL"
+
+[node name="BtnSettings" type="Button" parent="Layout/LeftColumn/MenuButtons"]
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "AJUSTES DE SENSIBILIDAD Y AUDIO"
+
+[node name="BtnQuit" type="Button" parent="Layout/LeftColumn/MenuButtons"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "SALIR"
+
+[node name="RightColumn" type="VBoxContainer" parent="Layout"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.15
+alignment = 1
+
+[node name="MissionCard" type="PanelContainer" parent="Layout/RightColumn"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="VBox" type="VBoxContainer" parent="Layout/RightColumn/MissionCard"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="MissionHeader" type="Label" parent="Layout/RightColumn/MissionCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.78, 0.34, 1)
+theme_override_font_sizes/font_size = 15
+text = "MISIÓN 01 · INFORME TÁCTICO"
+
+[node name="MissionTitle" type="Label" parent="Layout/RightColumn/MissionCard/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Hotel Corona (2 Pisos)"
+
+[node name="MissionBrief" type="Label" parent="Layout/RightColumn/MissionCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.86, 0.92, 1)
+theme_override_font_sizes/font_size = 17
+text = "• Objetivo: Despejar los 2 pisos del hotel y neutralizar a 7 terroristas armados con rifles AK-47.
+• Equipamiento: Carabina M4A1 con mira holográfica, fogonazo táctico y expulsión de casquillos.
+• Entorno: Lobby amplio, escalera central, mezanine y 5 habitaciones con puertas animadas."
+autowrap_mode = 2
+
+[node name="BtnStartMission" type="Button" parent="Layout/RightColumn/MissionCard/VBox"]
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxFlat_cta")
+text = "DESPLEGAR EN EL HOTEL"

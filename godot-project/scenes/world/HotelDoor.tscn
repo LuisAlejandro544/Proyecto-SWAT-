@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://hotel_door_scene"]
+
+[ext_resource type="Script" path="res://scripts/world/HotelDoor.gd" id="1_door_script"]
+[ext_resource type="PackedScene" path="res://assets/models/hotel_door.glb" id="2_door_glb"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_door_leaf"]
+size = Vector3(0.99, 2.18, 0.08)
+
+[node name="HotelDoor" type="Node3D"]
+script = ExtResource("1_door_script")
+
+[node name="DoorModel" parent="." instance=ExtResource("2_door_glb")]
+
+[node name="DoorPivotProxy" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0)
+
+[node name="LeafCollider" type="StaticBody3D" parent="DoorPivotProxy"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DoorPivotProxy/LeafCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1.1, 0)
+shape = SubResource("BoxShape3D_door_leaf")
