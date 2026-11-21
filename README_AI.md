@@ -55,6 +55,8 @@ python3 -m py_compile blender-scripts/*.py blender-scripts/lib/*.py blender-scri
   - **Solución implementada**: Se actualizó a `android-actions/setup-android@v4` especificando `packages: 'platform-tools platforms;android-34 build-tools;34.0.0'`, junto con `actions/checkout@v7`, `actions/setup-java@v6`, `actions/cache@v6` y `actions/upload-artifact@v7` para ejecución nativa en Node 24.
 - **Rutas de Android en Godot Headless**:
   - Godot `4.7.2-stable` lee `~/.config/godot/editor_settings-4.7.tres` para localizar `export/android/android_sdk_path`, `java_sdk_path` y `debug_keystore` antes de invocar `--export-debug "Android"`.
+- **Regla de Keystore Debug en `export_presets.cfg`**:
+  - Godot exige regla **todo o nada** para `keystore/debug`, `keystore/debug_user` y `keystore/debug_password`. Los tres deben quedar vacíos (`""`) en `export_presets.cfg` para delegar la firma al `debug.keystore` configurado en `editor_settings-4.7.tres` durante el CI.
 
 ---
 
