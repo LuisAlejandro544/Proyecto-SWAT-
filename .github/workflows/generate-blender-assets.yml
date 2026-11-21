@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Descargar repositorio
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Instalar dependencias de sistema para Blender headless
         run: |
@@ -20,7 +20,7 @@ jobs:
 
       - name: Cachear Blender 4.5.16 LTS
         id: cache-blender
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: /opt/blender
           key: blender-4.5.16-linux-x64
@@ -39,7 +39,7 @@ jobs:
           /opt/blender/blender --background --python blender-scripts/generate_all.py
 
       - name: Subir previsualizaciones PNG como artefacto
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: blender-asset-previews-png
           path: blender-scripts/previews/*.png
